@@ -2,10 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import {
-  GetElevationData,
-  GetWeatherData,
-} from "./components/api/weather";
+import { GetElevationData, GetWeatherData } from "./components/api/weather";
 
 function App() {
   const latInput = useRef();
@@ -69,14 +66,11 @@ function App() {
     } else {
       return dataList.map((d, i) => {
         return (
-          <div key={`data-${i}`}>
-            <span>
-              {d.label}
-              {": "}
-            </span>
-            <span className="fw-bold">{d.value}</span>
-            <span>{d.unit}</span>
-          </div>
+          <tr key={`data-${i}`}>
+            <td>{d.label}</td>
+            <td className="fw-bold">{d.value}</td>
+            <td>{d.unit}</td>
+          </tr>
         );
       });
     }
@@ -127,22 +121,30 @@ function App() {
               </button>
 
               <div className="card-footer text-muted mt-3">
-                <h4>Resultados</h4>
-                <DataLabelList
-                  dataList={weather}
-                  loading={loadingWeather}
-                  loadingLabel={"Buscando dados do clima"}
-                />
-                <DataLabelList
-                  dataList={solar}
-                  loading={loadingSolar}
-                  loadingLabel={"Buscando dados do sol"}
-                />
-                <DataLabelList
-                  dataList={elevation}
-                  loading={loadingElevation}
-                  loadingLabel={"Buscando dados de altitude"}
-                />
+                <table className="table table-striped table-hover">
+                  <thead>
+                    <th>Parâmetro</th>
+                    <th>Valor</th>
+                    <th>Unidade</th>
+                  </thead>
+                  <tbody>
+                    <DataLabelList
+                      dataList={weather}
+                      loading={loadingWeather}
+                      loadingLabel={"Buscando dados do clima"}
+                    />
+                    <DataLabelList
+                      dataList={solar}
+                      loading={loadingSolar}
+                      loadingLabel={"Buscando dados do sol"}
+                    />
+                    <DataLabelList
+                      dataList={elevation}
+                      loading={loadingElevation}
+                      loadingLabel={"Buscando dados de altitude"}
+                    />
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
