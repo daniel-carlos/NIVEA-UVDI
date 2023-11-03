@@ -10,9 +10,16 @@ export const getCurrentTime = () => {
   return `${year}-${month}-${day}T${hours}`;
 };
 
-export const GetWeatherData = async (lat, lng, callback) => {
+export const GetWeatherData = async (
+  lat,
+  lng,
+  callback,
+  setLoading = () => {}
+) => {
   const params = "windSpeed,humidity,airTemperature,cloudCover";
   const apiKey = import.meta.env.VITE_STORMGLASS_API_KEY;
+
+  setLoading(true);
 
   fetch(
     `https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lng}&params=${params}&start=${getCurrentTime()}&end=${getCurrentTime()}&source=sg`,
@@ -24,6 +31,7 @@ export const GetWeatherData = async (lat, lng, callback) => {
   )
     .then((response) => response.json())
     .then((jsonData) => {
+      setLoading(false);
       console.log("Weather", JSON.stringify(jsonData));
       callback([
         { label: "windSpeed", value: jsonData.hours[0].windSpeed.sg },
@@ -34,9 +42,16 @@ export const GetWeatherData = async (lat, lng, callback) => {
     });
 };
 
-export const GetSolarData = async (lat, lng, callback) => {
+export const GetSolarData = async (
+  lat,
+  lng,
+  callback,
+  setLoading = () => {}
+) => {
   const params = "downwardShortWaveRadiationFlux,uvIndex";
   const apiKey = import.meta.env.VITE_STORMGLASS_API_KEY;
+
+  setLoading(true);
 
   fetch(
     `https://api.stormglass.io/v2/solar/point?lat=${lat}&lng=${lng}&params=${params}&start=${getCurrentTime()}&end=${getCurrentTime()}&source=sg`,
@@ -48,6 +63,7 @@ export const GetSolarData = async (lat, lng, callback) => {
   )
     .then((response) => response.json())
     .then((jsonData) => {
+      setLoading(false);
       console.log("Solar", JSON.stringify(jsonData));
       callback([
         {
@@ -59,9 +75,16 @@ export const GetSolarData = async (lat, lng, callback) => {
     });
 };
 
-export const GetElevationData = async (lat, lng, callback) => {
+export const GetElevationData = async (
+  lat,
+  lng,
+  callback,
+  setLoading = () => {}
+) => {
   const params = "elevation";
   const apiKey = import.meta.env.VITE_STORMGLASS_API_KEY;
+
+  setLoading(true);
 
   fetch(
     `https://api.stormglass.io/v2/elevation/point?lat=${lat}&lng=${lng}&params=${params}&start=${getCurrentTime()}&end=${getCurrentTime()}&source=sg`,
@@ -73,6 +96,7 @@ export const GetElevationData = async (lat, lng, callback) => {
   )
     .then((response) => response.json())
     .then((jsonData) => {
+      setLoading(false);
       console.log("Elevation", JSON.stringify(jsonData));
       callback([{ label: "Altitude", value: jsonData.data.elevation }]);
     });

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import {
@@ -7,21 +9,19 @@ import {
 } from "./components/api/weather";
 
 function App() {
-  // const [latitude, setLatitude] = useState();
-  // const [longitude, setLongitude] = useState();
-
   const latInput = useRef();
   const lngInput = useRef(null);
 
   const [weather, setWeather] = useState([]);
+  const [loadingWeather, setLoadingWeather] = useState(false);
   const [solar, setSolar] = useState([]);
+  const [loadingSolar, setLoadingSolar] = useState(false);
   const [elevation, setElevation] = useState([]);
+  const [loadingElevation, setLoadingElevation] = useState(false);
 
   const getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((pos) => {
-        // setLatitude(pos.coords.latitude);
-        // setLongitude(pos.coords.longitude);
         latInput.current.value = pos.coords.latitude;
         lngInput.current.value = pos.coords.longitude;
       });
@@ -35,25 +35,49 @@ function App() {
   }, []);
 
   const searchClickHandle = () => {
-    GetWeatherData(latInput.current.value, lngInput.current.value, setWeather);
-    GetSolarData(latInput.current.value.toString(), lngInput.current.value.toString(), setSolar);
+    GetWeatherData(
+      latInput.current.value,
+      lngInput.current.value,
+      setWeather,
+      setLoadingWeather
+    );
+    GetSolarData(
+      latInput.current.value.toString(),
+      lngInput.current.value.toString(),
+      setSolar,
+      setLoadingSolar
+    );
     GetElevationData(
       latInput.current.value,
       lngInput.current.value,
-      setElevation
+      setElevation,
+      setLoadingElevation
     );
   };
 
-  const DataLabelList = ({ dataList }) => {
-    return dataList.map((d, i) => {
+  const DataLabelList = ({ dataList, loading, loadingLabel }) => {
+    if (loading) {
       return (
-        <div key={`data-${i}`}>
-          <span>{d.label}</span>
-          {": "}
-          <span>{d.value}</span>
+        <div className="d-flex align-items-center">
+          <strong>{loadingLabel}</strong>
+          <div
+            className="spinner-border ms-auto"
+            role="status"
+            aria-hidden="true"
+          ></div>
         </div>
       );
-    });
+    } else {
+      return dataList.map((d, i) => {
+        return (
+          <div key={`data-${i}`}>
+            <span>{d.label}</span>
+            {": "}
+            <span>{d.value}</span>
+          </div>
+        );
+      });
+    }
   };
 
   return (
@@ -95,18 +119,29 @@ function App() {
               <button
                 className="btn btn-sm btn-primary"
                 onClick={searchClickHandle}
+                disabled={loadingWeather || loadingSolar || loadingElevation}
               >
                 Buscar
               </button>
 
-              {weather.length + solar.length + elevation.length > 0 && (
-                <div className="card-footer text-muted mt-3">
-                  <h4>Resultados</h4>
-                  <DataLabelList dataList={weather} />
-                  <DataLabelList dataList={solar} />
-                  <DataLabelList dataList={elevation} />
-                </div>
-              )}
+              <div className="card-footer text-muted mt-3">
+                <h4>Resultados</h4>
+                <DataLabelList
+                  dataList={weather}
+                  loading={loadingWeather}
+                  loadingLabel={"Buscando dados do clima"}
+                />
+                <DataLabelList
+                  dataList={solar}
+                  loading={loadingSolar}
+                  loadingLabel={"Buscando dados do sol"}
+                />
+                <DataLabelList
+                  dataList={elevation}
+                  loading={loadingElevation}
+                  loadingLabel={"Buscando dados de altitude"}
+                />
+              </div>
             </div>
           </div>
         </div>
