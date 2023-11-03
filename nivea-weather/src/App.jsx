@@ -36,7 +36,7 @@ function App() {
 
   const searchClickHandle = () => {
     GetWeatherData(latInput.current.value, lngInput.current.value, setWeather);
-    GetSolarData(latInput.current.value, lngInput.current.value, setSolar);
+    GetSolarData(latInput.current.value.toString(), lngInput.current.value.toString(), setSolar);
     GetElevationData(
       latInput.current.value,
       lngInput.current.value,
