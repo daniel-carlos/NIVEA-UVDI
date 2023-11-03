@@ -64,7 +64,7 @@ export const GetSolarData = async (lat, lng, callback) => {
 };
 
 export const GetElevationData = async (lat, lng, callback) => {
-  callback([{ label: "Altitude", value: elevation.hours[0].elevation.sg }]);
+  callback([{ label: "Altitude", value: elevation.data.elevation }]);
 
   // const params = "windSpeed,humidity,airTemperature,cloudCover";
   // const apiKey =

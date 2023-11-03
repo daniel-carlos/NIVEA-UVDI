@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { GetSolarData, GetWeatherData } from "./components/api/weather";
-import DataLabel from "./components/dataLabel";
+import {
+  GetElevationData,
+  GetSolarData,
+  GetWeatherData,
+} from "./components/api/weather";
 
 function App() {
   // const [latitude, setLatitude] = useState();
@@ -12,6 +15,7 @@ function App() {
 
   const [weather, setWeather] = useState([]);
   const [solar, setSolar] = useState([]);
+  const [elevation, setElevation] = useState([]);
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -33,6 +37,11 @@ function App() {
   const searchClickHandle = () => {
     GetWeatherData(latInput.current.value, lngInput.current.value, setWeather);
     GetSolarData(latInput.current.value, lngInput.current.value, setSolar);
+    GetElevationData(
+      latInput.current.value,
+      lngInput.current.value,
+      setElevation
+    );
   };
 
   const DataLabelList = ({ dataList }) => {
@@ -90,11 +99,12 @@ function App() {
                 Buscar
               </button>
 
-              {weather.length + solar.length > 0 && (
+              {weather.length + solar.length + elevation.length > 0 && (
                 <div className="card-footer text-muted mt-3">
                   <h4>Resultados</h4>
                   <DataLabelList dataList={weather} />
-                  <DataLabelList dataList={weather} />
+                  <DataLabelList dataList={solar} />
+                  <DataLabelList dataList={elevation} />
                 </div>
               )}
             </div>
