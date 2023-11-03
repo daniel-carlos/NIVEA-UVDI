@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import {
   GetElevationData,
-  GetSolarData,
   GetWeatherData,
 } from "./components/api/weather";
 
@@ -47,12 +46,12 @@ function App() {
     //   setSolar,
     //   setLoadingSolar
     // );
-    // GetElevationData(
-    //   latInput.current.value,
-    //   lngInput.current.value,
-    //   setElevation,
-    //   setLoadingElevation
-    // );
+    GetElevationData(
+      latInput.current.value,
+      lngInput.current.value,
+      setElevation,
+      setLoadingElevation
+    );
   };
 
   const DataLabelList = ({ dataList, loading, loadingLabel }) => {
@@ -75,7 +74,7 @@ function App() {
               {d.label}
               {": "}
             </span>
-            <span className="fw-bold">{d.value}{" "}</span>
+            <span className="fw-bold">{d.value}</span>
             <span>{d.unit}</span>
           </div>
         );
@@ -88,7 +87,7 @@ function App() {
       <div className="container m-5">
         <div className="card" style={{ maxWidth: "30rem" }}>
           <div className="card-body">
-            <h4 className="card-title ">UVDI</h4>
+            <h4 className="card-title ">Nivea UVDI Data</h4>
             <div className="card-text">
               <section style={{ width: "15rem" }}>
                 <div className="input-group input-group-sm mb-3">

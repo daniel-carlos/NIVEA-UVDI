@@ -1,5 +1,12 @@
 // import { elevation, solar, weather } from "../../fakeData/fakeData";
 
+const formatarTimestamp = (timestamp) => {
+  const data = new Date(timestamp * 1000); // Converta o timestamp em milissegundos
+  const hora = data.getHours().toString().padStart(2, '0'); // Obtém a hora (formato com 2 dígitos)
+  const minuto = data.getMinutes().toString().padStart(2, '0'); // Obtém os minutos (formato com 2 dígitos)
+  return `${hora}:${minuto}`;
+}
+
 export const getCurrentTime = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -22,6 +29,23 @@ const EncontrarIndiceDaHoraAtual = (listaDeHorarios) => {
   // Se a hora atual for maior que o último horário na lista, retorne o último índice
   return listaDeHorarios.length - 1;
 };
+
+const MountHourlyResult = (data, label, paramName, indexHour) => {
+  return {
+    label: label,
+    value: data.hourly[paramName][indexHour],
+    unit: data.hourly_units[paramName],
+  };
+};
+
+const MountMinute15Result = (data, label, paramName, indexMin15) => {
+  return {
+    label: label,
+    value: data.minutely_15[paramName][indexMin15],
+    unit: data.minutely_15_units[paramName],
+  };
+};
+
 export const GetWeatherData = async (
   lat,
   lng,
@@ -29,7 +53,8 @@ export const GetWeatherData = async (
   setLoading = () => {}
 ) => {
   const hourParams = "wind_speed_10m,uv_index,direct_radiation,cloudcover";
-  const min15Params = "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,diffuse_radiation";
+  const min15Params =
+    "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,diffuse_radiation";
 
   setLoading(true);
 
@@ -39,69 +64,44 @@ export const GetWeatherData = async (
     .then((response) => response.json())
     .then((jsonData) => {
       setLoading(false);
-      // console.log("Weather", JSON.stringify(jsonData));
+
       const index15 = EncontrarIndiceDaHoraAtual(jsonData.minutely_15.time);
       const indexHour = EncontrarIndiceDaHoraAtual(jsonData.hourly.time);
+
       callback([
-        { label: "Índice UV", value: jsonData.hourly.uv_index[indexHour], unit: jsonData.hourly_units.uv_index },
-        { label: "Reflexão da Superfície", value: jsonData.hourly.direct_radiation[indexHour], unit: jsonData.hourly_units.direct_radiation  },
-        {
-          label: "Coberto por nuvens",
-          value: jsonData.hourly.cloudcover[indexHour],
-        },
-        {
-          label: "Umidade Relativa",
-          value: jsonData.minutely_15.relative_humidity_2m[index15],
-        },
-        {
-          label: "Velocidade do vento",
-          value: jsonData.minutely_15.wind_speed_10m[index15],
-        },
-        {
-          label: "Temperatura",
-          value: jsonData.minutely_15.temperature_2m[index15],
-        },
-        {
-          label: "Temperatura Aparente",
-          value: jsonData.minutely_15.apparent_temperature[index15],
-        },
-      ]);
-    });
-};
-
-export const GetSolarData = async (
-  lat,
-  lng,
-  callback,
-  setLoading = () => {}
-) => {
-  const params = "downwardShortWaveRadiationFlux,uvIndex";
-  const apiKey = import.meta.env.VITE_STORMGLASS_API_KEY;
-
-  setLoading(true);
-
-  fetch(
-    `https://api.stormglass.io/v2/solar/point?lat=${lat}&lng=${lng}&params=${params}&start=${getCurrentTime()}&end=${getCurrentTime()}&source=sg`,
-    {
-      headers: {
-        Authorization: apiKey,
-      },
-    }
-  )
-    .then((response) => response.json())
-    .then((jsonData) => {
-      setLoading(false);
-      console.log("Solar", JSON.stringify(jsonData));
-      if (jsonData.errors) {
-        callback([{ label: "Erro (solar)", value: jsonData.errors.key }]);
-        return;
-      }
-      callback([
-        {
-          label: "DownwardShortWaveRadiationFlux",
-          value: jsonData.hours[0].downwardShortWaveRadiationFlux.sg,
-        },
-        { label: "Índice UV", value: jsonData.hours[0].uvIndex.sg },
+        { label: "Hora do dia", value: formatarTimestamp(jsonData.minutely_15.time[index15]) },
+        MountHourlyResult(jsonData, "Índice UV", "uv_index", indexHour),
+        MountHourlyResult(
+          jsonData,
+          "Reflexão da Superfície",
+          "direct_radiation",
+          indexHour
+        ),
+        MountHourlyResult(
+          jsonData,
+          "Coberto por nuvens",
+          "cloudcover",
+          indexHour
+        ),
+        MountMinute15Result(
+          jsonData,
+          "Umidade Relativa",
+          "relative_humidity_2m",
+          index15
+        ),
+        MountMinute15Result(
+          jsonData,
+          "Velocidade do vento",
+          "wind_speed_10m",
+          index15
+        ),
+        MountMinute15Result(jsonData, "Temperatura", "temperature_2m", index15),
+        MountMinute15Result(
+          jsonData,
+          "Temperatura Aparente",
+          "apparent_temperature",
+          index15
+        ),
       ]);
     });
 };
@@ -112,27 +112,14 @@ export const GetElevationData = async (
   callback,
   setLoading = () => {}
 ) => {
-  const params = "elevation";
-  const apiKey = import.meta.env.VITE_STORMGLASS_API_KEY;
-
   setLoading(true);
 
   fetch(
-    `https://api.stormglass.io/v2/elevation/point?lat=${lat}&lng=${lng}&params=${params}&start=${getCurrentTime()}&end=${getCurrentTime()}&source=sg`,
-    {
-      headers: {
-        Authorization: apiKey,
-      },
-    }
+    `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`
   )
     .then((response) => response.json())
     .then((jsonData) => {
       setLoading(false);
-      console.log("Elevation", JSON.stringify(jsonData));
-      if (jsonData.errors) {
-        callback([{ label: "Erro (elevation)", value: jsonData.errors.key }]);
-        return;
-      }
-      callback([{ label: "Altitude", value: jsonData.data.elevation }]);
+      callback([{ label: "Altitude", value: jsonData.elevation, unit: "m" }]);
     });
 };
