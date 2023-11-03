@@ -41,18 +41,18 @@ function App() {
       setWeather,
       setLoadingWeather
     );
-    GetSolarData(
-      latInput.current.value.toString(),
-      lngInput.current.value.toString(),
-      setSolar,
-      setLoadingSolar
-    );
-    GetElevationData(
-      latInput.current.value,
-      lngInput.current.value,
-      setElevation,
-      setLoadingElevation
-    );
+    // GetSolarData(
+    //   latInput.current.value.toString(),
+    //   lngInput.current.value.toString(),
+    //   setSolar,
+    //   setLoadingSolar
+    // );
+    // GetElevationData(
+    //   latInput.current.value,
+    //   lngInput.current.value,
+    //   setElevation,
+    //   setLoadingElevation
+    // );
   };
 
   const DataLabelList = ({ dataList, loading, loadingLabel }) => {
@@ -71,9 +71,12 @@ function App() {
       return dataList.map((d, i) => {
         return (
           <div key={`data-${i}`}>
-            <span>{d.label}</span>
-            {": "}
-            <span>{d.value}</span>
+            <span>
+              {d.label}
+              {": "}
+            </span>
+            <span className="fw-bold">{d.value}{" "}</span>
+            <span>{d.unit}</span>
           </div>
         );
       });
@@ -82,12 +85,12 @@ function App() {
 
   return (
     <>
-      <div className="container">
-        <div className="card">
+      <div className="container m-5">
+        <div className="card" style={{ maxWidth: "30rem" }}>
           <div className="card-body">
             <h4 className="card-title ">UVDI</h4>
             <div className="card-text">
-              <section style={{ width: "12rem" }}>
+              <section style={{ width: "15rem" }}>
                 <div className="input-group input-group-sm mb-3">
                   <span className="input-group-text" style={{ width: "6rem" }}>
                     Latitude
