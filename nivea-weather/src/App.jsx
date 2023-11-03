@@ -35,6 +35,18 @@ function App() {
     GetSolarData(latInput.current.value, lngInput.current.value, setSolar);
   };
 
+  const DataLabelList = ({ dataList }) => {
+    return dataList.map((d, i) => {
+      return (
+        <div key={`data-${i}`}>
+          <span>{d.label}</span>
+          {": "}
+          <span>{d.value}</span>
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       <div className="container">
@@ -78,27 +90,11 @@ function App() {
                 Buscar
               </button>
 
-              {(weather.length > 0 || solar.length > 0) && (
+              {weather.length + solar.length > 0 && (
                 <div className="card-footer text-muted mt-3">
                   <h4>Resultados</h4>
-                  {weather.length > 0 &&
-                    weather.map((d, i) => {
-                      return (
-                        <div key={`data-${i}`}>
-                          {" "}
-                          <DataLabel label={d.label} dataValue={d.value} />{" "}
-                        </div>
-                      );
-                    })}
-                  {solar.length > 0 &&
-                    solar.map((d, i) => {
-                      return (
-                        <div key={`data-${i}`}>
-                          {" "}
-                          <DataLabel label={d.label} dataValue={d.value} />{" "}
-                        </div>
-                      );
-                    })}
+                  <DataLabelList dataList={weather} />
+                  <DataLabelList dataList={weather} />
                 </div>
               )}
             </div>
